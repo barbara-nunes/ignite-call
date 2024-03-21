@@ -20,6 +20,9 @@ import {
   IntervalItem,
 } from './styles'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { convertTimeStringToMinutes } from '@/src/utils/convert-time-string-to-minutes'
+import { api } from '@/src/lib/axios'
+import { useRouter } from 'next/router'
 
 const timeIntervalsFormSchema = z.object({
   intervals: z
@@ -40,8 +43,8 @@ const timeIntervalsFormSchema = z.object({
       return intervals.map((interval) => {
         return {
           weekDay: interval.weekDay,
-         /*  startTimeInMinutes: convertTimeStringToMinutes(interval.startTime),
-          endTimeInMinutes: convertTimeStringToMinutes(interval.endTime), */
+          startTimeInMinutes: convertTimeStringToMinutes(interval.startTime),
+          endTimeInMinutes: convertTimeStringToMinutes(interval.endTime),
         }
       })
     })
@@ -49,7 +52,7 @@ const timeIntervalsFormSchema = z.object({
       (intervals) => {
         return intervals.every(
           (interval) =>
-            /* interval.endTimeInMinutes - 60 >= interval.startTimeInMinutes, */
+            interval.endTimeInMinutes - 60 >= interval.startTimeInMinutes,
         )
       },
       {
@@ -59,7 +62,8 @@ const timeIntervalsFormSchema = z.object({
     ),
 })
 
-type TimeIntervalsFormData = z.infer<typeof timeIntervalsFormSchema>
+type TimeIntervalsFormInput = z.input<typeof timeIntervalsFormSchema>
+type TimeIntervalsFormOutput = z.output<typeof timeIntervalsFormSchema>
 
 export default function TimeIntervals() {
   const {
@@ -68,7 +72,7 @@ export default function TimeIntervals() {
     control,
     watch,
     formState: { isSubmitting, errors },
-  } = useForm({
+  } = useForm<TimeIntervalsFormInput>({
     resolver: zodResolver(timeIntervalsFormSchema),
     defaultValues: {
       intervals: [
@@ -83,8 +87,8 @@ export default function TimeIntervals() {
     },
   })
 
-  /* const router = useRouter()
-   */
+  const router = useRouter()
+
   const weekDays = getWeekDays()
 
   const { fields } = useFieldArray({
@@ -94,14 +98,14 @@ export default function TimeIntervals() {
 
   const intervals = watch('intervals')
 
-  async function handleSetTimeIntervals(data: TimeIntervalsFormSchema) {
-    /* const { intervals } = data as TimeIntervalsFormOutput
+  async function handleSetTimeIntervals(data: any) {
+    const { intervals } = data as TimeIntervalsFormOutput
 
     await api.post('/users/time-intervals', {
       intervals,
     })
 
-    await router.push('/register/update-profile') */
+    await router.push('/register/update-profile')
   }
 
   return (
