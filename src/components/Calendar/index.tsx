@@ -31,7 +31,7 @@ interface CalendarProps {
   onDateSelected: (date: Date) => void
 }
 
-export function Calendar() {
+export function Calendar({ selectedDate, onDateSelected }: CalendarProps) {
   const [currentDate, setCurrentDate] = useState(() => {
     return dayjs().set('date', 1)
   })
@@ -90,10 +90,9 @@ export function Calendar() {
       ...daysInMonthArray.map((date) => {
         return {
           date,
-          disabled:
-            date.endOf('day').isBefore(new Date()) ||
+          disabled: date.endOf('day').isBefore(new Date()) /*  ||
             blockedDates.blockedWeekDays.includes(date.get('day')) ||
-            blockedDates.blockedDates.includes(date.get('date')),
+            blockedDates.blockedDates.includes(date.get('date')), */,
         }
       }),
       ...nextMonthFillArray.map((date) => {
@@ -105,7 +104,7 @@ export function Calendar() {
       (weeks, _, i, original) => {
         const isNewWeek = i % 7 === 0
 
-        if (!isNewWeek) {
+        if (isNewWeek) {
           weeks.push({
             week: i / 7 + 1,
             days: original.slice(i, i + 7),
@@ -154,7 +153,10 @@ export function Calendar() {
                 {days.map(({ date, disabled }) => {
                   return (
                     <td key={date.toString()}>
-                      <CalendarDay disabled={disabled}>
+                      <CalendarDay
+                        /* onClick={() => onDateSelected(date.toDate())} */
+                        disabled={disabled}
+                      >
                         {date.get('date')}
                       </CalendarDay>
                     </td>
