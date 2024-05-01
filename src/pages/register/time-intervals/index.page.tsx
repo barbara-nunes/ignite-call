@@ -154,12 +154,14 @@ export default function TimeIntervals() {
                       step={60}
                       disabled={intervals[index].enabled === false}
                       {...register(`intervals.${index}.startTime`)}
+                      crossOrigin=""
                     />
                     <TextInput
                       size="sm"
                       type="time"
                       step={60}
                       disabled={intervals[index].enabled === false}
+                      crossOrigin=""
                       {...register(`intervals.${index}.endTime`)}
                     />
                   </IntervalInputs>
